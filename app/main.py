@@ -5,6 +5,10 @@ class User(BaseModel):
     name : str
     email : str
 
+class UserUpdate(BaseModel):
+    name : str | None = None
+    email : str | None = None
+
 app = FastAPI()
 
 users = [
@@ -39,3 +43,24 @@ def create_user(user:User):
     users.append(new_user)
 
     return new_user
+
+@app.delete("/users/{user_id}",tags=["Users"])
+def delete_user(user_id:int):
+    for index,user in enumerate(users):
+        if user["id"] == user_id:
+            users.pop(index)
+            return {"messgae" : "User Deleted Successfully"}
+
+    return {"error" : "User not found."}
+
+@app.put("/users/{user_id}",tags=["Users"])
+def update_user(user_id:int, user:UserUpdate):
+    for existing_user in users:
+        if existing_user["id"] == user_id:
+            updated_data = user.model_dump(exclude_unset=True)
+            existing_user.update(updated_data)
+            # existing_user["name"] = user.name
+            # existing_user["email"] = user.email
+
+            return existing_user,"Updated"
+    return {"error": "User not found"}
