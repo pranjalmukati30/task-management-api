@@ -1,14 +1,12 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from app.routers import users
-from app.routers import projects
-from app.routers import tasks
+from fastapi import FastAPI
+from app.routers import users,projects,tasks,users_v2
 
 
 app = FastAPI()
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
+app.include_router(users_v2.router, prefix="/api/v2")
 
 
 
