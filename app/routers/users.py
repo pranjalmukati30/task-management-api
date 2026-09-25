@@ -11,17 +11,23 @@ class UserUpdate(BaseModel):
     name : str | None = None
     email : str | None = None
 
+class UserResponse(BaseModel):
+    id : int
+    name : str
+    # age : int | None = None
+
 users = [
     {"id": 1, "name": "Pranjal", "email": "pranjal@gmail.com"},
     {"id": 2, "name": "Rahul", "email": "rahul@gmail.com"},
 ]
 
 
+# @router.get("",tags=["Users"],response_model=list[UserResponse])
 @router.get("",tags=["Users"])
 def all_users():
     return users
 
-@router.get("/{user_id}",tags=["Users"])
+@router.get("/{user_id}",tags=["Users"],response_model=UserResponse)
 def user(user_id:int):
     for user in users:
         if user.get("id") == user_id:

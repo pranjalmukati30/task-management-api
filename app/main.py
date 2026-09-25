@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.routers import users,projects,tasks,users_v2
 
 
-app = FastAPI()
+app = FastAPI(title="Task Management API")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
