@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix="/users")
 
 class User(BaseModel):
     name : str
@@ -17,11 +17,11 @@ users = [
 ]
 
 
-@router.get("/users",tags=["Users"])
+@router.get("",tags=["Users"])
 def all_users():
     return users
 
-@router.get("/users/{user_id}",tags=["Users"])
+@router.get("/{user_id}",tags=["Users"])
 def user(user_id:int):
     for user in users:
         if user.get("id") == user_id:
@@ -30,7 +30,7 @@ def user(user_id:int):
     raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
 
-@router.post("/users",tags=["Users"])
+@router.post("",tags=["Users"])
 def create_user(user:User):
     new_id = max(user["id"] for user in users) + 1
     new_user = {
@@ -42,7 +42,7 @@ def create_user(user:User):
 
     return new_user
 
-@router.put("/users/{user_id}",tags=["Users"])
+@router.put("/{user_id}",tags=["Users"])
 def update_user(user_id:int, user:UserUpdate):
     for existing_user in users:
         if existing_user["id"] == user_id:
@@ -51,7 +51,7 @@ def update_user(user_id:int, user:UserUpdate):
             return existing_user
     raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
-@router.delete("/users/{user_id}",tags=["Users"])
+@router.delete("/{user_id}",tags=["Users"])
 def delete_user(user_id:int):
     for index,user in enumerate(users):
         if user["id"] == user_id:

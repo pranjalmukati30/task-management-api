@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-router=APIRouter()
+router=APIRouter(prefix="/projects")
 
 class Project(BaseModel):
     name : str
@@ -20,18 +20,18 @@ projects = [
 ]
 
 
-@router.get("/projects",tags=["Projects"])
+@router.get("",tags=["Projects"])
 def all_projects():
     return projects
 
-@router.get("/projects/{project_id}",tags=["Projects"])
+@router.get("/{project_id}",tags=["Projects"])
 def project(project_id:int):
     for project in projects:
         if project.get("id") == project_id:
             return project
     raise HTTPException(status_code=404,detail=f"Project {project_id} not found")
 
-@router.post("/projects",tags=["Projects"])
+@router.post("",tags=["Projects"])
 def create_project(project:Project):
     new_id = max(project["id"] for project in projects) + 1
     new_project = {
@@ -43,7 +43,7 @@ def create_project(project:Project):
     projects.routerend(new_project)
     return new_project
 
-@router.put("/projects/{project_id}",tags=["Projects"])
+@router.put("/{project_id}",tags=["Projects"])
 def update_project(project:ProjectUpdate, project_id:int):
     for existing_project in projects:
         if existing_project["id"] == project_id:
@@ -52,7 +52,7 @@ def update_project(project:ProjectUpdate, project_id:int):
             return existing_project
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
-@router.delete("/projects/{project_id}",tags=["Projects"])
+@router.delete("/{project_id}",tags=["Projects"])
 def delete_project(project_id:int):
     for index,project in enumerate(projects):
         if project["id"] == project_id:

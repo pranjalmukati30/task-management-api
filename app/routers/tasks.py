@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix="/tasks")
 
 class Task(BaseModel):
     title : str
@@ -27,12 +27,11 @@ tasks = [{"id": 1,"title": "Design API structure","description": "Plan the endpo
 ]
 
 
-
-@router.get("/tasks",tags=["Tasks"])
+@router.get("",tags=["Tasks"])
 def all_tasks():
     return tasks
 
-@router.get("/tasks/{task_id}",tags=["Tasks"])
+@router.get("/{task_id}",tags=["Tasks"])
 def task(task_id:int):
     for task in tasks:
         if task.get("id") == task_id:
@@ -40,7 +39,7 @@ def task(task_id:int):
 
     raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
-@router.post("/tasks",tags=["Tasks"])
+@router.post("",tags=["Tasks"])
 def create_task(task:Task):
     new_id = max(task["id"] for task in tasks) + 1
     new_task = {
@@ -55,7 +54,7 @@ def create_task(task:Task):
     tasks.append(new_task)
     return new_task
 
-@router.put("/tasks/{task_id}",tags=["Tasks"])
+@router.put("/{task_id}",tags=["Tasks"])
 def update_task(task:TaskUpdate, task_id:int):
     for existing_task in tasks:
         if existing_task["id"] == task_id:
@@ -64,7 +63,7 @@ def update_task(task:TaskUpdate, task_id:int):
             return existing_task
     raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
-@router.delete("/tasks/{task_id}",tags=["Tasks"])
+@router.delete("/{task_id}",tags=["Tasks"])
 def delete_task(task_id:int):
     for index,task in enumerate(tasks):
         if task["id"] == task_id:
