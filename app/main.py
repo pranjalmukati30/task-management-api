@@ -6,7 +6,7 @@ app = FastAPI(title="Task Management API")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
-app.include_router(users_v2.router, prefix="/api/v2")
+# app.include_router(users_v2.router, prefix="/api/v2")
 
 
 
