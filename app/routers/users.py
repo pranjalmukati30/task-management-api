@@ -3,22 +3,10 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
-from pydantic import BaseModel
+from app.schemas import UserCreate, UserUpdate, UserResponse
+
 
 router = APIRouter(prefix="/users")
-
-class UserCreate(BaseModel):
-    name : str
-    email : str
-
-class UserUpdate(BaseModel):
-    name : str | None = None
-    email : str | None = None
-
-class UserResponse(BaseModel):
-    id : int
-    name : str
-    # age : int | None = None
 
 
 @router.get("",tags=["Users"])
