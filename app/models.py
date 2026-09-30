@@ -12,6 +12,7 @@ class User(Base):
     id : Mapped[int] = mapped_column(primary_key = True)
     name : Mapped[str] = mapped_column(String(100))
     email : Mapped[str] = mapped_column(String(150))
+    password_hash : Mapped[str] = mapped_column(String(255))
 
     projects: Mapped[list["Project"]] = relationship()
 
@@ -25,3 +26,15 @@ class Project(Base):
     owner_id : Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     owner : Mapped["User"] = relationship()
+
+
+class Task(Base):
+    __tablename__ = "tasks"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(150))
+    description: Mapped[str | None] = mapped_column(String(255))
+    status: Mapped[str] = mapped_column(String(50))
+    priority: Mapped[str] = mapped_column(String(50))
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    assigned_to: Mapped[int] = mapped_column(ForeignKey("users.id"))

@@ -1,5 +1,6 @@
+from argon2 import hash_password
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from app.security import hash_password
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
@@ -9,13 +10,13 @@ from app.schemas import UserCreate, UserUpdate, UserResponse
 router = APIRouter(prefix="/users")
 
 
-@router.get("",tags=["Users"])
+@router.get("",tags=["Users"],response_model=list[UserResponse])
 def all_users(db:Session = Depends(get_db)):
     users = db.query(User).all()
     return users
 
 
-@router.get("/{user_id}",tags=["Users"])
+@router.get("/{user_id}",tags=["Users"],response_model=UserResponse)
 def get_user(user_id:int, db:Session = Depends(get_db)):
     
     user = db.query(User).filter(User.id == user_id).first()
@@ -30,6 +31,7 @@ def create_user(user:UserCreate, db:Session = Depends(get_db)):
     new_user = User(
         name = user.name,
         email = user.email,
+        password_hash = hash_password(user.password)
     )
     db.add(new_user)
     db.commit()
@@ -44,9 +46,15 @@ def update_user(user_id:int, user:UserUpdate, db:Session = Depends(get_db)):
 
     updated_data = user.model_dump(exclude_unset=True)
 
+    if "password" in updated_data:
+        updated_data["password_hash"] = hash_password(
+        updated_data.pop("password")
+    )
+        
     # Update the existing SQLAlchemy object
     for field, value in updated_data.items():
         setattr(existing_user, field, value)
+
 
     # Save changes to database
     db.commit()
