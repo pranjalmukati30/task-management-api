@@ -1,10 +1,10 @@
-from argon2 import hash_password
 from fastapi import APIRouter, HTTPException, Depends
 from app.security import hash_password
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
 from app.schemas import UserCreate, UserUpdate, UserResponse
+from app.dependencies import get_current_user
 
 
 router = APIRouter(prefix="/users")
@@ -16,14 +16,14 @@ def all_users(db:Session = Depends(get_db)):
     return users
 
 
-@router.get("/{user_id}",tags=["Users"],response_model=UserResponse)
-def get_user(user_id:int, db:Session = Depends(get_db)):
+# @router.get("/{user_id}",tags=["Users"],response_model=UserResponse)
+# def get_user(user_id:int, db:Session = Depends(get_db)):
     
-    user = db.query(User).filter(User.id == user_id).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail=f"User {user_id} not found")
+#     user = db.query(User).filter(User.id == user_id).first()
+#     if user is None:
+#         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
-    return user
+#     return user
 
 
 @router.post("",tags=["Users"])
@@ -70,3 +70,21 @@ def delete_user(user_id:int, db:Session = Depends(get_db)):
     db.delete(user)
     db.commit()
     return {"message" : f"User {user_id} deleted successfully"}
+
+
+@router.get("/me", tags=["Users"], response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.get("/{user_id}", tags=["Users"], response_model=UserResponse)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"User {user_id} not found"
+        )
+
+    return user

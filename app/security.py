@@ -28,6 +28,17 @@ def create_acess_token(user_id:int) -> str:
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 
+def decode_access_token(token:str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+
+    except jwt.InvalidTokenError:
+        return None
+
+
+
+
 # print(create_acess_token(5))
 
 # print("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1In0.f9JN4-atFtST5SzfEuIED4Do6JwjpAux-ROzFBd_1O0" == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1In0.f9JN4-atFtST5SzfEuIED4Do6JwjpAux-ROzFBd_1O0")
